@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Language Explorer</title>
+
+<style>
+@CHARSET "ISO-8859-1";
+
+*{
+	margin:0px;
+	padding:0px;
+}
+
+div.object {
+	font:normal 20px Impact;
+	width:500px;
+	padding:20px;
+	background:white;
+	left:900px;
+	position:relative;
+	opacity:0;
+	border-radius:15px;
+	margin-top:5px;
+}
+
+#nav_bar{
+	list-style-type: none;
+	margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width:600px;
+    border-radius:15px;
+}
+
+#nav_item{
+	float:left;
+}
+
+a.nav_link:link, a.nav_link:visited{
+	display:block;
+	width:190px;
+	color:#FFFFFF;
+	text-align:center;
+	padding:5px;
+	background:#004080;
+	text-decoration: none;
+	font:bold 15px Arial;
+}
+
+a.nav_link:hover, a.nav_link:active{
+    background-color: #0000ff;
+}
+
+h1{
+	font:bold 60px Impact;
+}
+
+h2{
+	font:30px Impact;
+	padding:5px
+}
+
+article{
+	padding:15px;
+	margin-top:20px;
+	background:#004080;
+	color:white;
+	border-radius:15px;
+}
+
+body{
+	background:url("C:\Users\Jeffrey\Dropbox\WebDev\restful\com.jeffrey.wikidemo\WebContent\congruent_pentagon.png");
+}
+
+header, nav, section, aside, article, hgroup, footer {
+	display: block;
+}
+
+#wrapper{
+	width:1000px;
+	margin:20px auto;
+	text-align:left;
+}
+
+#top_header{
+	padding:5px;
+}
+</style>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	var anim = function(i) {
+		if(i < $("#container > a").length){
+			$("#div" + i).animate({left:'0px', opacity:'1'}, 500, function(){anim(i+1)});
+		} else {
+			$("#div" + i).animate({left:'0px', opacity:'1'}, 500);
+		}
+	}
+  $("#submit").click(function(){
+  	$("#returnCode").remove();
+  	$("#container").remove();
+  	$("#submit").after('<img id="loading_circle" height="200px" width="200px" src="https://dl-web.dropbox.com/get/webdev/restful/com.jeffrey.wikidemo/WebContent/circle.gif?_subject_uid=75336077&w=AABahRn6I1PGaRhIiHRRonKh01DUkcRUPVtka9GoSjaI2Q" alt="" style="margin:0px auto;display:block">');
+  	$("#submit").prop("disabled", true);
+  	var title = $("#input_title").val();
+    $.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/language/html/",
+    $("input[name=language]:checked", "#language_select").val() + " " + title,
+    function(data,status){
+    	$("#loading_circle").remove();
+    	$("#submit").prop("disabled", false);
+    	var result;
+    	if(data == "(None)") {
+    		result = "<p id=\"returnCode\">No articles found for \"" + title + "\".</p>";
+    	} else {
+    		result = "<p id=\"returnCode\">Wikipedia has articles an article for \"" + title +
+    		"\" in the following language editions: </p>" + data;
+    	}
+    	$("#result").after(result);
+    	anim(1);
+    });
+  });
+  
+  $("#input_title").keyup(function(event){
+    if(event.keyCode == 13){
+        $("#submit").click();
+    }
+	});
+});
+</script>
+</head>
+<body>
+<div id="wrapper">
+<header id="top_header">
+	<h1>WIKIBRAIN</h1>
+</header>
+
+<nav>
+	<ul id="nav_bar">
+		<li id="nav_item"><a class="nav_link" href="http://localhost:8080/com.jeffrey.wikidemo/">Home</a></li>
+		<li id="nav_item"><a class="nav_link" href="http://localhost:8080/com.jeffrey.wikidemo/wikibrain/language_explorer">Language Explorer</a></li>
+		<li id="nav_item"><a class="nav_link" href="http://localhost:8080/com.jeffrey.wikidemo/wikibrain/wikiracing">WikiRacing</a></li>
+	</ul>
+</nav>
+<section>
+	<article id="language_explorer">	
+		<h2>Language Explorer</h2>
+		<p>First, select your language:</p>
+		<form id="language_select">
+		<input type="radio" name="language" value="simple" checked="checked"/>English<br>
+		<input type="radio" name="language" value="sw"/>Swahili<br>
+		<input type="radio" name="language" value="la"/>Latin<br>	
+		</form>
+		
+		<p>Enter the title of an article and hit submit. Language Explorer will fetch a list of language editions that contain the article!</p>
+		<input type="text" id="input_title" size="82"/>
+		<button id="submit">Submit</button>
+		<p id="result"><br></p>
+		<br>
+		<br>
+		<p>Check out the WikiBrain web API used to make this app <a href="http://localhost:8080/com.jeffrey.wikidemo/api/language">here</a>.</p>
+	</article>
+</section>
+</div>
+</body>
+</html>

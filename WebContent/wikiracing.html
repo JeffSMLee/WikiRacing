@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<style>
+@CHARSET "ISO-8859-1";
+
+*{
+	margin:0px;
+	padding:0px;
+}
+
+#target {
+	font:normal 20px Impact;
+	padding:20px;
+	background:white;
+	left:0px;
+	position:relative;
+	border-radius:15px;
+	margin-top:5px;
+	margin-bottom:5px;
+	color:black;
+}
+
+#nav_bar{
+	list-style-type: none;
+	margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width:600px;
+    border-radius:15px;
+}
+
+#nav_item{
+	float:left;
+}
+
+#flex {
+	width:970px;
+
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+
+	display: -moz-box;
+	-moz-box-orient: horizontal;
+
+	display: box;
+	box-orient: horizontal;
+}
+
+#player {
+	background:white;
+	color:black;
+	width:480px;
+	margin-right:5px;
+	border-radius:15px;
+}
+
+#bot {
+	background:white;
+	color:black;
+	width:480px;
+	margin-left:5px;
+	border-radius:15px;
+}
+
+.current {
+	font:normal 20px Impact;
+	padding:5px;
+}
+
+.link {
+	font:normal 20px Impact;
+	background:white;
+	margin-top:10px;
+	margin-bottom:5px;
+	margin-left:5px;
+	margin-right:5px;
+	border-radius:15px;
+	padding:20px;
+}
+
+a.nav_link:link, a.nav_link:visited{
+	display:block;
+	width:190px;
+	color:#FFFFFF;
+	text-align:center;
+	padding:5px;
+	background:#004080;
+	text-decoration: none;
+	font:bold 15px Arial;
+}
+
+a.nav_link:hover, a.nav_link:active{
+    background-color: #0000ff;
+}
+
+h1{
+	font:bold 60px Impact;
+}
+
+h2{
+	font:30px Impact;
+	padding:5px
+}
+
+article{
+	padding:15px;
+	margin-top:20px;
+	background:#004080;
+	color:white;
+	border-radius:15px;
+}
+
+body{
+}
+
+header, nav, section, aside, article, hgroup, footer {
+	display: block;
+}
+
+#wrapper{
+	width:1000px;
+	margin:20px auto;
+	text-align:left;
+}
+
+#top_header{
+	padding:5px;
+}
+</style>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	var sessionKey = -1;
+	
+	$("#start").click(function() {
+		$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/start", $("#same_start").val(),
+			function(data) {
+			sessionKey = data;
+			$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/target", sessionKey,
+				function(data) {
+					$("#start").after("<div id=\"target\">" + "TARGET: " + data + "</div>");
+				});
+			$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/player/current", sessionKey,
+				function(data) {
+					$("#player_current").append(data);
+				});
+			$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/player/links", sessionKey,
+				function(data) {
+					$("#player_links").html(data);
+				});
+			
+			$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/bot/current", sessionKey,
+				function(data) {
+					$("#bot_current").append(data);
+				});
+			$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/bot/links", sessionKey,
+				function(data) {
+					$("#bot_links").html(data);
+				});
+			
+		});
+	});
+	
+	$(document.body).on("click", "#player_option", function() {
+		$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/player/pick", sessionKey + " " + $(this).attr("link"), 
+			function(d) {
+				$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/player/current", sessionKey,
+				function(data) {
+					$("#player_current").append(data);
+				});
+				$("#player_links").empty();
+				
+				$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/bot/pick", sessionKey, 
+				function(data) {
+					$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/bot/current", sessionKey,
+					function(data) {
+						$("#bot_current").append(data);
+					});
+					$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/status", sessionKey,
+					function(data) {
+						var summ = function(summary) {
+							$("#flex").remove();
+							$("#start").remove();
+							$("#target").remove();
+							$("#wr_header").after(summary);
+						}
+						if(data == "player" || data == "bot" || data == "tie") {
+							$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/summary", sessionKey,
+							function(data) {
+								summ(data);
+							});
+						}
+					});
+					$("#bot_links").empty();
+					$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/bot/links", sessionKey,
+					function(data) {
+						$("#bot_links").html(data);
+						$.post("http://localhost:8080/com.jeffrey.wikidemo/wikibrain/api/wikiracing/player/links", sessionKey,
+						function(data) {
+							$("#player_links").html(data);
+						});
+					});
+				});
+				
+			});
+	});
+	$(document.body).on("click", "#bot_option", function() {
+		alert(sessionKey + "bot");
+	});
+});
+</script>
+</head>
+<body>
+<div id="wrapper">
+<header id="top_header">
+	<h1>WIKIBRAIN</h1>
+</header>
+
+<nav>
+	<ul id="nav_bar">
+		<li id="nav_item"><a class="nav_link" href="http://localhost:8080/com.jeffrey.wikidemo/">Home</a></li>
+		<li id="nav_item"><a class="nav_link" href="http://localhost:8080/com.jeffrey.wikidemo/wikibrain/language_explorer">Language Explorer</a></li>
+		<li id="nav_item"><a class="nav_link" href="http://localhost:8080/com.jeffrey.wikidemo/wikibrain/wikiracing">WikiRacing</a></li>
+	</ul>
+</nav>
+<section>
+	<article id="wikiracing">
+		<h2 id="wr_header">WikiRacing</h2>	
+		<button id="start">Start</button>
+		<br>
+		<input type="checkbox" value="true" id="same_start">Start on same article
+		<div id="flex">
+		<div id="player">
+			<h2>You</h2>
+			<div class="current" id="player_current"></div>
+			<div class="links" id="player_links"></div>
+		</div>
+		<div id="bot">
+			<h2>Bot</h2>
+			<div class="current" id="bot_current"></div>
+			<div class="links" id="bot_links"></div>
+		</div>
+		</div>
+	</article>
+</section>
+</div>
+</body>
+</html>

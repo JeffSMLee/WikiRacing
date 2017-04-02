@@ -1,0 +1,81 @@
+@CHARSET "ISO-8859-1";
+
+*{
+	margin:0px;
+	padding:0px;
+}
+
+div.object {
+	font:normal 20px Impact;
+	width:500px;
+	padding:20px;
+	background:white;
+	left:900px;
+	position:relative;
+	opacity:0;
+	border-radius:15px;
+	margin-top:5px;
+}
+
+#nav_bar{
+	list-style-type: none;
+	margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width:600px;
+    border-radius:15px;
+}
+
+#nav_item{
+	float:left;
+}
+
+a.nav_link:link, a.nav_link:visited{
+	display:block;
+	width:190px;
+	color:#FFFFFF;
+	text-align:center;
+	padding:5px;
+	background:#004080;
+	text-decoration: none;
+	font:bold 15px Arial;
+}
+
+a.nav_link:hover, a.nav_link:active{
+    background-color: #0000ff;
+}
+
+h1{
+	font:bold 60px Impact;
+}
+
+h2{
+	font:30px Impact;
+	padding:5px
+}
+
+article{
+	padding:15px;
+	margin-top:20px;
+	background:#004080;
+	color:white;
+	border-radius:15px;
+}
+
+body{
+	background:url("congruent_pentagon.png");
+}
+
+header, nav, section, aside, article, hgroup, footer {
+	display: block;
+}
+
+#wrapper{
+	width:1000px;
+	margin:20px auto;
+	text-align:left;
+}
+
+#top_header{
+	padding:5px;
+}
